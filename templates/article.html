@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ article.title }} | GamersLookingFor</title>
+
+    <meta
+        name="description"
+        content="{{ article.excerpt }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .article-page {
+            padding: 70px 0 100px;
+        }
+
+        .article-container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .article-breadcrumb {
+            margin-bottom: 30px;
+            color: #8fa1bb;
+            font-size: 14px;
+        }
+
+        .article-breadcrumb a {
+            color: #08aaff;
+            text-decoration: none;
+        }
+
+        .article-header {
+            max-width: 950px;
+            margin-bottom: 55px;
+        }
+
+        .article-category {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 7px 12px;
+            border: 1px solid rgba(8, 170, 255, 0.35);
+            border-radius: 999px;
+            color: #08aaff;
+            background: rgba(8, 170, 255, 0.08);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .article-header h1 {
+            margin: 0 0 24px;
+            color: #f4f7ff;
+            font-size: clamp(42px, 6vw, 76px);
+            line-height: 0.98;
+            letter-spacing: -0.045em;
+        }
+
+        .article-excerpt {
+            max-width: 850px;
+            margin: 0 0 25px;
+            color: #a8b6cb;
+            font-size: 20px;
+            line-height: 1.65;
+        }
+
+        .article-meta {
+            color: #8292a9;
+            font-size: 14px;
+        }
+
+        .article-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 350px;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .article-content {
+            min-width: 0;
+        }
+
+        .article-section {
+            margin-bottom: 55px;
+        }
+
+        .article-section h2 {
+            margin: 0 0 20px;
+            color: #f4f7ff;
+            font-size: 32px;
+            line-height: 1.15;
+            letter-spacing: -0.025em;
+        }
+
+        .article-section p {
+            margin: 0 0 22px;
+            color: #c0ccdc;
+            font-size: 18px;
+            line-height: 1.85;
+        }
+
+        /* QUICK SPECIFICATIONS */
+
+        .quick-specs {
+            margin: 0 0 55px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            background: #07101d;
+        }
+
+        .quick-specs-header {
+            padding: 22px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .quick-specs-header h2 {
+            margin: 0;
+            color: #f4f7ff;
+            font-size: 24px;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .spec-item {
+            padding: 18px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .spec-item:nth-child(odd) {
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .spec-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #718198;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .spec-value {
+            color: #e8eef8;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        /* FEATURED PRODUCT */
+
+        .featured-product {
+            position: sticky;
+            top: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(8, 170, 255, 0.2);
+            border-radius: 22px;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(113, 76, 255, 0.16),
+                    transparent 45%
+                ),
+                #07101d;
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.35),
+                0 0 45px rgba(8, 170, 255, 0.06);
+        }
+
+        .product-image-area {
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(8, 170, 255, 0.10),
+                    transparent 65%
+                );
+        }
+
+        .product-image-area img {
+            display: block;
+            width: 100%;
+            max-height: 260px;
+            object-fit: contain;
+            filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.45));
+        }
+
+        .product-placeholder {
+            width: 100%;
+            min-height: 210px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 1px dashed rgba(8, 170, 255, 0.28);
+            border-radius: 16px;
+            background: rgba(3, 7, 17, 0.55);
+        }
+
+        .product-placeholder-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background: linear-gradient(
+                135deg,
+                rgba(8, 170, 255, 0.18),
+                rgba(113, 76, 255, 0.18)
+            );
+            color: #08aaff;
+            font-size: 30px;
+        }
+
+        .product-placeholder strong {
+            color: #f4f7ff;
+            font-size: 16px;
+        }
+
+        .product-placeholder span {
+            margin-top: 7px;
+            color: #788aa3;
+            font-size: 12px;
+        }
+
+        .product-info {
+            padding: 26px;
+        }
+
+        .product-brand {
+            margin-bottom: 7px;
+            color: #08aaff;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .product-info h3 {
+            margin: 0 0 8px;
+            color: #f4f7ff;
+            font-size: 25px;
+            line-height: 1.15;
+        }
+
+        .product-sku {
+            margin-bottom: 22px;
+            color: #8292a9;
+            font-size: 13px;
+        }
+
+        .product-price-label {
+            color: #8292a9;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .product-price {
+            margin: 3px 0 20px;
+            color: #ffffff;
+            font-size: 31px;
+            font-weight: 800;
+        }
+
+        .product-price-note {
+            margin: -12px 0 20px;
+            color: #718198;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .amazon-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 48px;
+            margin-bottom: 10px;
+            border-radius: 11px;
+            background: linear-gradient(
+                135deg,
+                #08aaff,
+                #714cff
+            );
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 12px 30px rgba(8, 170, 255, 0.18);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .amazon-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 35px rgba(8, 170, 255, 0.28);
+        }
+
+        .details-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 46px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 11px;
+            color: #dce5f2;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .details-button:hover {
+            border-color: rgba(8, 170, 255, 0.35);
+            background: rgba(8, 170, 255, 0.07);
+        }
+
+        /* DISCLOSURE */
+
+        .affiliate-note {
+            margin-top: 35px;
+            padding: 18px 20px;
+            border-left: 3px solid #08aaff;
+            background: rgba(8, 170, 255, 0.05);
+            color: #8191a8;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .source-note {
+            margin-top: 20px;
+            color: #65758c;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 900px) {
+            .article-layout {
+                grid-template-columns: 1fr;
+                gap: 45px;
+            }
+
+            .featured-product {
+                position: static;
+            }
+
+            .article-header h1 {
+                font-size: clamp(40px, 10vw, 64px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .article-page {
+                padding-top: 45px;
+            }
+
+            .article-container {
+                padding: 0 18px;
+            }
+
+            .article-excerpt {
+                font-size: 17px;
+            }
+
+            .article-section h2 {
+                font-size: 27px;
+            }
+
+            .article-section p {
+                font-size: 16px;
+                line-height: 1.75;
+            }
+
+            .spec-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .spec-item:nth-child(odd) {
+                border-right: none;
+            }
+
+            .product-image-area {
+                min-height: 220px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="article-page">
+
+    <div class="article-container">
+
+        <div class="article-breadcrumb">
+            <a href="/">GamersLookingFor</a>
+            <span> / </span>
+            <a href="/articles">Articles</a>
+            <span> / </span>
+            {{ article.category }}
+        </div>
+
+
+        <header class="article-header">
+
+            <div class="article-category">
+                {{ article.category }}
+            </div>
+
+            <h1>
+                {{ article.title }}
+            </h1>
+
+            <p class="article-excerpt">
+                {{ article.excerpt }}
+            </p>
+
+            <div class="article-meta">
+                By {{ article.author }}
+                · Published {{ article.published_date }}
+                · Updated {{ article.updated_date }}
+            </div>
+
+        </header>
+
+
+        {% if product %}
+
+        <div class="article-layout">
+
+            <article class="article-content">
+
+                <section class="quick-specs">
+
+                    <div class="quick-specs-header">
+                        <h2>Quick Specifications</h2>
+                    </div>
+
+                    <div class="spec-grid">
+
+                        <div class="spec-item">
+                            <span class="spec-label">CPU</span>
+                            <span class="spec-value">
+                                {{ product.cpu }}
+                            </span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">GPU</span>
+                            <span class="spec-value">
+                                {{ product.gpu }}
+                            </span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">VRAM</span>
+                            <span class="spec-value">
+                                {{ product.vram }}
+                            </span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">Memory</span>
+                            <span class="spec-value">
+                                {{ product.ram }}
+                            </span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">Storage</span>
+                            <span class="spec-value">
+                                {{ product.storage }}
+                            </span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">Display</span>
+                            <span class="spec-value">
+                                {{ product.display }}
+                            </span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">Refresh Rate</span>
+                            <span class="spec-value">
+                                {{ product.refresh_rate }}
+                            </span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">Operating System</span>
+                            <span class="spec-value">
+                                {{ product.operating_system }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {% for section in article.content %}
+
+                <section class="article-section">
+
+                    <h2>
+                        {{ section.heading }}
+                    </h2>
+
+                    {% for paragraph in section.paragraphs %}
+
+                    <p>
+                        {{ paragraph }}
+                    </p>
+
+                    {% endfor %}
+
+                </section>
+
+                {% endfor %}
+
+
+                <div class="affiliate-note">
+                    As an Amazon Associate, GamersLookingFor earns from
+                    qualifying purchases. Prices and availability can
+                    change after this article is published.
+                </div>
+
+                <div class="source-note">
+                    Product specifications are checked against available
+                    manufacturer and retailer information. Exact
+                    configurations can vary by SKU and market.
+                </div>
+
+            </article>
+
+
+            <aside class="featured-product">
+
+                <div class="product-image-area">
+
+                    {% if product.image %}
+
+                        <img
+                            src="{{ product.image }}"
+                            alt="{{ product.name }}"
+                        >
+
+                    {% else %}
+
+                        <div class="product-placeholder">
+
+                            <div class="product-placeholder-icon">
+                                ▣
+                            </div>
+
+                            <strong>
+                                Product Image
+                            </strong>
+
+                            <span>
+                                Exact product photography coming soon
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="product-info">
+
+                    <div class="product-brand">
+                        {{ product.brand }}
+                    </div>
+
+                    <h3>
+                        {{ product.name }}
+                    </h3>
+
+                    <div class="product-sku">
+                        Exact SKU:
+                        <strong>{{ product.exact_sku }}</strong>
+                    </div>
+
+
+                    {% if product.price %}
+
+                    <div class="product-price-label">
+                        Observed Price
+                    </div>
+
+                    <div class="product-price">
+                        ${{ "%.2f"|format(product.price) }}
+                    </div>
+
+                    <div class="product-price-note">
+                        Price observed on {{ product.verified_date }}.
+                        Retail pricing may change.
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if product.amazon_url %}
+
+                    <a
+                        class="amazon-button"
+                        href="{{ product.amazon_url }}"
+                        target="_blank"
+                        rel="nofollow sponsored noopener"
+                    >
+                        Check Price on Amazon
+                    </a>
+
+                    {% endif %}
+
+
+                    <a
+                        class="details-button"
+                        href="{{ url_for('product', product_id=product.id) }}"
+                    >
+                        View Full Product Details
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+</body>
+</html>

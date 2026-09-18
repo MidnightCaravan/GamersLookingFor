@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Compare Gaming Hardware | GamersLookingFor</title>
+
+    <meta
+        name="description"
+        content="Compare gaming hardware specifications, prices, GPUs, CPUs, displays, memory, storage and more."
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .compare-page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 24px 100px;
+        }
+
+        .compare-heading {
+            margin-bottom: 40px;
+        }
+
+        .compare-heading h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .compare-heading p {
+            color: #9aa8bd;
+            font-size: 17px;
+            max-width: 760px;
+        }
+
+        .compare-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            background: rgba(7, 12, 24, 0.92);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+        }
+
+        .compare-table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        .compare-table th,
+        .compare-table td {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .compare-table thead th {
+            background: rgba(15, 23, 42, 0.96);
+        }
+
+        .compare-table .spec-label {
+            width: 190px;
+            color: #9aa8bd;
+            font-weight: 600;
+            background: rgba(10, 16, 30, 0.95);
+        }
+
+        .compare-product {
+            min-width: 240px;
+        }
+
+        .compare-product-brand {
+            color: #6ea8ff;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .compare-product-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .compare-product-sku {
+            color: #7f8da3;
+            font-size: 13px;
+        }
+
+        .compare-badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: rgba(91, 74, 255, 0.16);
+            border: 1px solid rgba(125, 103, 255, 0.35);
+            color: #b7aaff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .compare-value {
+            color: #f3f6fb;
+            font-weight: 600;
+        }
+
+        .compare-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .compare-muted {
+            color: #6f7d92;
+            font-weight: 500;
+        }
+
+        .compare-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .compare-button {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .compare-button-primary {
+            background: linear-gradient(
+                135deg,
+                #2563eb,
+                #7c3aed
+            );
+            color: white;
+        }
+
+        .compare-button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 85, 255, 0.3);
+        }
+
+        .compare-button-secondary {
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #d9e1ef;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .compare-button-secondary:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .compare-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #8d9ab0;
+        }
+
+        @media (max-width: 700px) {
+            .compare-page {
+                padding: 40px 16px 70px;
+            }
+
+            .compare-heading h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="container">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="site-logo"
+        >
+            GamersLookingFor
+        </a>
+
+        <nav class="main-nav">
+
+            <a href="{{ url_for('gaming_laptops') }}">
+                Gaming Laptops
+            </a>
+
+            <a href="{{ url_for('gaming_pcs') }}">
+                Gaming PCs
+            </a>
+
+            <a href="{{ url_for('graphics_cards') }}">
+                GPUs
+            </a>
+
+            <a href="{{ url_for('monitors') }}">
+                Monitors
+            </a>
+
+            <a href="{{ url_for('articles') }}">
+                Articles
+            </a>
+
+        </nav>
+
+    </div>
+</header>
+
+
+<main class="compare-page">
+
+    <section class="compare-heading">
+
+        <h1>Compare Gaming Hardware</h1>
+
+        <p>
+            Compare real product specifications side by side.
+            Check CPU, GPU, VRAM, memory, storage, display,
+            power, weight and current observed pricing.
+        </p>
+
+    </section>
+
+
+    {% if products %}
+
+    <div class="compare-table-wrap">
+
+        <table class="compare-table">
+
+            <thead>
+
+                <tr>
+
+                    <th class="spec-label">
+                        Product
+                    </th>
+
+                    {% for product in products %}
+
+                    <th class="compare-product">
+
+                        <div class="compare-product-brand">
+                            {{ product.brand }}
+                        </div>
+
+                        <div class="compare-product-name">
+                            {{ product.name }}
+                        </div>
+
+                        <div class="compare-product-sku">
+                            {{ product.exact_sku }}
+                        </div>
+
+                        {% if product.badge %}
+
+                        <div class="compare-badge">
+                            {{ product.badge }}
+                        </div>
+
+                        {% endif %}
+
+                    </th>
+
+                    {% endfor %}
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td class="spec-label">
+                        Price
+                    </td>
+
+                    {% for product in products %}
+
+                    <td>
+
+                        {% if product.price %}
+
+                        <div class="compare-price">
+                            ${{ "{:,.2f}".format(product.price) }}
+                        </div>
+
+                        {% else %}
+
+                        <span class="compare-muted">
+                            Price not available
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        CPU
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.cpu or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        GPU
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.gpu or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        VRAM
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.vram or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        RAM
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.ram or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Storage
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.storage or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Display
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.display or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Refresh Rate
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.refresh_rate or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Graphics Power
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.tgp or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Combined CPU/GPU Power
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.cpu_gpu_power or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Operating System
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.operating_system or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Weight
+                    </td>
+
+                    {% for product in products %}
+
+                    <td class="compare-value">
+                        {{ product.weight or "—" }}
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Verification
+                    </td>
+
+                    {% for product in products %}
+
+                    <td>
+
+                        {% if product.specs_verified_date %}
+
+                        <div class="compare-value">
+                            Specs:
+                            {{ product.specs_verified_date }}
+                        </div>
+
+                        {% endif %}
+
+                        {% if product.verified_date %}
+
+                        <div class="compare-muted">
+                            Price:
+                            {{ product.verified_date }}
+                        </div>
+
+                        {% endif %}
+
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+
+                <tr>
+
+                    <td class="spec-label">
+                        Links
+                    </td>
+
+                    {% for product in products %}
+
+                    <td>
+
+                        <div class="compare-actions">
+
+                            <a
+                                href="{{ url_for('product', product_id=product.id) }}"
+                                class="compare-button compare-button-primary"
+                            >
+                                View Details
+                            </a>
+
+                            {% if product.amazon_url %}
+
+                            <a
+                                href="{{ product.amazon_url }}"
+                                target="_blank"
+                                rel="nofollow sponsored noopener"
+                                class="compare-button compare-button-secondary"
+                            >
+                                Amazon
+                            </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                    {% endfor %}
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="compare-empty">
+
+        <h2>No products selected</h2>
+
+        <p>
+            Select products to compare them here.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div class="container">
+
+        <p>
+            © 2026 GamersLookingFor.
+            Gaming Hardware. Compared. Explained.
+        </p>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

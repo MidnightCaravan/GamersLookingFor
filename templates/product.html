@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ product.name }}
+        {% if product.exact_sku %}
+            {{ product.exact_sku }}
+        {% endif %}
+        — GamersLookingFor
+    </title>
+
+    <meta
+        name="description"
+        content="{{ product.description }}"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="{{ url_for('static', filename='favicon.png') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* =========================================================
+           PRODUCT PAGE
+        ========================================================= */
+
+        .product-page {
+            padding: 30px 0 70px;
+        }
+
+        .product-breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            align-items: center;
+            margin-bottom: 28px;
+            color: #8491aa;
+            font-size: 14px;
+        }
+
+        .product-breadcrumb a {
+            color: #aebbd1;
+            text-decoration: none;
+        }
+
+        .product-breadcrumb a:hover {
+            color: #24bfff;
+        }
+
+        /* =========================================================
+           HEADER LOGO
+        ========================================================= */
+
+        .brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 245px;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* =========================================================
+           HERO
+        ========================================================= */
+
+        .product-main {
+            display: grid;
+            grid-template-columns: minmax(360px, 0.9fr) minmax(450px, 1.1fr);
+            gap: 55px;
+            align-items: start;
+        }
+
+        .product-image-large {
+            min-height: 500px;
+            border: 1px solid rgba(90, 110, 150, 0.28);
+            border-radius: 22px;
+            background:
+                radial-gradient(
+                    circle at 50% 30%,
+                    rgba(45, 115, 255, 0.14),
+                    transparent 45%
+                ),
+                linear-gradient(
+                    145deg,
+                    #0d1424,
+                    #070b14 65%,
+                    #0d0b1c
+                );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.35),
+                inset 0 0 60px rgba(25, 80, 180, 0.06);
+        }
+
+        .product-image-large img {
+            width: 100%;
+            height: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .product-image-placeholder {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .product-image-placeholder-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 22px;
+            border-radius: 20px;
+            border: 1px solid rgba(50, 170, 255, 0.25);
+            background: rgba(20, 80, 150, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2bbcff;
+            font-size: 38px;
+        }
+
+        .product-image-placeholder strong {
+            display: block;
+            color: #dce7f7;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .product-image-placeholder span {
+            color: #6f7d96;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           PRODUCT INFORMATION
+        ========================================================= */
+
+        .product-information {
+            padding-top: 8px;
+        }
+
+        .product-brand {
+            color: #8e9bb2;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .product-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 13px;
+            border-radius: 999px;
+            background: linear-gradient(
+                90deg,
+                rgba(25, 140, 255, 0.18),
+                rgba(150, 45, 255, 0.18)
+            );
+            border: 1px solid rgba(70, 160, 255, 0.25);
+            color: #74cfff;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .product-information h1 {
+            margin: 0 0 12px;
+            font-size: clamp(38px, 4vw, 58px);
+            line-height: 1.02;
+            letter-spacing: -0.035em;
+            color: #f3f7ff;
+        }
+
+        .product-sku {
+            color: #7f8da7;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .product-description {
+            color: #aeb9cc;
+            font-size: 17px;
+            line-height: 1.7;
+            max-width: 760px;
+            margin-bottom: 26px;
+        }
+
+        /* =========================================================
+           QUICK SPECS
+        ========================================================= */
+
+        .quick-specs {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .quick-spec {
+            padding: 15px 16px;
+            border: 1px solid rgba(85, 105, 145, 0.24);
+            border-radius: 12px;
+            background: rgba(13, 20, 34, 0.75);
+        }
+
+        .quick-spec span {
+            display: block;
+            color: #71809a;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 5px;
+        }
+
+        .quick-spec strong {
+            display: block;
+            color: #e8effb;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        /* =========================================================
+           PRICE
+        ========================================================= */
+
+        .product-price-block {
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(75, 105, 155, 0.28);
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(18, 31, 54, 0.9),
+                    rgba(10, 13, 25, 0.9)
+                );
+        }
+
+        .price-label {
+            display: block;
+            color: #7d8aa1;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            margin-bottom: 6px;
+        }
+
+        .product-price {
+            color: #ffffff;
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        .price-source {
+            color: #8290a8;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .price-context {
+            color: #65748e;
+            font-size: 12px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           ACTIONS
+        ========================================================= */
+
+        .product-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 13px;
+        }
+
+        .product-actions .button-primary,
+        .product-actions .button-secondary,
+        .product-actions .button-retailer {
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .product-actions .button-primary {
+            background: linear-gradient(
+                90deg,
+                #159cff,
+                #7347ff
+            );
+            color: white;
+            box-shadow:
+                0 8px 28px rgba(55, 115, 255, 0.22);
+        }
+
+        .product-actions .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 34px rgba(55, 115, 255, 0.34);
+        }
+
+        .product-actions .button-secondary {
+            border: 1px solid rgba(105, 125, 160, 0.38);
+            background: rgba(18, 25, 39, 0.8);
+            color: #d6dfed;
+        }
+
+        .product-actions .button-secondary:hover {
+            transform: translateY(-2px);
+            border-color: rgba(45, 180, 255, 0.5);
+        }
+
+        .product-actions .button-retailer {
+            background: linear-gradient(
+                90deg,
+                #159cff,
+                #7347ff
+            );
+            color: #ffffff;
+            box-shadow:
+                0 8px 28px rgba(55, 115, 255, 0.18);
+        }
+
+        .product-actions .button-retailer:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 34px rgba(55, 115, 255, 0.30);
+        }
+
+        .retailer-context {
+            color: #7d8aa1;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        .retailer-context strong {
+            color: #cdd8e8;
+        }
+
+        .paid-link {
+            color: #77859c;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .affiliate-note {
+            color: #748198;
+            font-size: 12px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .amazon-context {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(90, 110, 145, 0.22);
+            background: rgba(11, 16, 27, 0.65);
+            color: #8a98af;
+            font-size: 13px;
+        }
+
+        .amazon-context strong {
+            color: #cdd8e8;
+        }
+
+        /* =========================================================
+           SPECIFICATIONS
+        ========================================================= */
+
+        .product-specifications {
+            padding: 75px 0;
+            border-top: 1px solid rgba(80, 100, 140, 0.14);
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(8, 13, 23, 0.4),
+                    rgba(11, 16, 28, 0.85)
+                );
+        }
+
+        .section-heading {
+            margin-bottom: 30px;
+        }
+
+        .eyebrow {
+            display: block;
+            color: #28baff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            color: #f0f5fd;
+            font-size: 34px;
+            letter-spacing: -0.025em;
+        }
+
+        .specification-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1px;
+            border: 1px solid rgba(85, 105, 145, 0.22);
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(85, 105, 145, 0.15);
+        }
+
+        .specification-item {
+            padding: 19px 20px;
+            background: #0a101c;
+        }
+
+        .specification-item span {
+            display: block;
+            color: #687790;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        .specification-item strong {
+            display: block;
+            color: #dce5f3;
+            font-size: 15px;
+            line-height: 1.45;
+        }
+
+        /* =========================================================
+           BUYING SECTION
+        ========================================================= */
+
+        .product-availability {
+            padding: 70px 0;
+        }
+
+        .availability-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(70, 110, 165, 0.3);
+            background:
+                radial-gradient(
+                    circle at 90% 50%,
+                    rgba(110, 45, 255, 0.11),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #0d1728,
+                    #090e19
+                );
+        }
+
+        .availability-box h2 {
+            margin: 0 0 10px;
+            color: #eef4fc;
+            font-size: 30px;
+        }
+
+        .availability-box p {
+            max-width: 620px;
+            margin: 0;
+            color: #8492a9;
+            line-height: 1.6;
+        }
+
+        .availability-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .availability-actions a {
+            min-height: 46px;
+            padding: 0 18px;
+            border-radius: 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .availability-actions .button-primary {
+            background: linear-gradient(
+                90deg,
+                #159cff,
+                #7347ff
+            );
+            color: white;
+        }
+
+        .availability-actions .button-secondary {
+            border: 1px solid rgba(100, 120, 155, 0.35);
+            background: rgba(10, 15, 25, 0.8);
+            color: #d2dceb;
+        }
+
+        /* =========================================================
+           VERIFICATION
+        ========================================================= */
+
+        .product-verification {
+            padding: 0 0 55px;
+        }
+
+        .verification-box {
+            padding: 18px 20px;
+            border-left: 3px solid #218fff;
+            background: rgba(12, 19, 31, 0.65);
+        }
+
+        .verification-box p {
+            margin: 0;
+            color: #74829a;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .footer-associate-note {
+            margin-top: 10px;
+            color: #65738a;
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .product-main {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .product-image-large {
+                min-height: 420px;
+            }
+
+            .availability-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .brand-logo {
+                width: 185px;
+            }
+
+            .product-page {
+                padding-top: 20px;
+            }
+
+            .product-image-large {
+                min-height: 320px;
+            }
+
+            .product-information h1 {
+                font-size: 38px;
+            }
+
+            .quick-specs {
+                grid-template-columns: 1fr;
+            }
+
+            .specification-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .availability-box {
+                padding: 25px;
+            }
+
+            .availability-box h2 {
+                font-size: 25px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="site-header">
+
+    <div class="container header-inner">
+
+        <a href="/" class="brand">
+
+            <img
+                src="{{ url_for('static', filename='logo.png') }}"
+                alt="GamersLookingFor"
+                class="brand-logo"
+            >
+
+        </a>
+
+
+        <nav class="main-nav">
+
+            <a
+                href="/gaming-laptops"
+                {% if product.category == "gaming-laptops" %}
+                class="active"
+                {% endif %}
+            >
+                Gaming Laptops
+            </a>
+
+            <a
+                href="/gaming-pcs"
+                {% if product.category == "gaming-pcs" %}
+                class="active"
+                {% endif %}
+            >
+                Gaming PCs
+            </a>
+
+            <a
+                href="/graphics-cards"
+                {% if product.category == "graphics-cards" %}
+                class="active"
+                {% endif %}
+            >
+                GPUs
+            </a>
+
+            <a
+                href="/monitors"
+                {% if product.category == "monitors" %}
+                class="active"
+                {% endif %}
+            >
+                Monitors
+            </a>
+
+            <a href="/articles">
+                Articles
+            </a>
+
+        </nav>
+
+
+        <div class="header-actions">
+
+            <form
+                class="search-box"
+                action="/search"
+                method="get"
+            >
+
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Search hardware..."
+                    aria-label="Search hardware"
+                >
+
+            </form>
+
+
+            <button
+                class="menu-button"
+                aria-label="Open menu"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main>
+
+
+<!-- Breadcrumb -->
+
+<section class="container">
+
+    <div class="product-breadcrumb">
+
+        <a href="/">
+            Home
+        </a>
+
+        <span>›</span>
+
+        <a href="/{{ product.category }}">
+
+            {% if product.category == "gaming-laptops" %}
+                Gaming Laptops
+
+            {% elif product.category == "gaming-pcs" %}
+                Gaming PCs
+
+            {% elif product.category == "graphics-cards" %}
+                Graphics Cards
+
+            {% elif product.category == "monitors" %}
+                Gaming Monitors
+
+            {% else %}
+                Products
+            {% endif %}
+
+        </a>
+
+        <span>›</span>
+
+        <span>
+            {{ product.name }}
+        </span>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     PRODUCT HERO
+========================================================= -->
+
+<section class="product-page">
+
+    <div class="container">
+
+        <div class="product-main">
+
+
+            <!-- PRODUCT IMAGE -->
+
+            <div class="product-image-large">
+
+                {% if product.image %}
+
+                    <img
+                        src="{{ product.image }}"
+                        alt="{{ product.brand }} {{ product.name }}"
+                    >
+
+                {% else %}
+
+                    <div class="product-image-placeholder">
+
+                        <div class="product-image-placeholder-icon">
+                            G
+                        </div>
+
+                        <strong>
+                            Product image coming soon
+                        </strong>
+
+                        <span>
+                            We are preparing product imagery for this listing.
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- PRODUCT INFORMATION -->
+
+            <div class="product-information">
+
+
+                <div class="product-brand">
+
+                    {{ product.brand }}
+
+                    {% if product.exact_sku %}
+                        · {{ product.exact_sku }}
+                    {% endif %}
+
+                </div>
+
+
+                {% if product.badge %}
+
+                <div class="product-badge">
+                    {{ product.badge }}
+                </div>
+
+                {% endif %}
+
+
+                <h1>
+                    {{ product.name }}
+                </h1>
+
+
+                {% if product.exact_sku %}
+
+                <div class="product-sku">
+
+                    Exact configuration:
+                    <strong>
+                        {{ product.exact_sku }}
+                    </strong>
+
+                </div>
+
+                {% endif %}
+
+
+                <p class="product-description">
+                    {{ product.description }}
+                </p>
+
+
+
+                <!-- QUICK SPECS -->
+
+                <div class="quick-specs">
+
+
+                    {% if product.cpu %}
+
+                    <div class="quick-spec">
+
+                        <span>
+                            CPU
+                        </span>
+
+                        <strong>
+                            {{ product.cpu }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+
+
+                    {% if product.gpu %}
+
+                    <div class="quick-spec">
+
+                        <span>
+                            GPU
+                        </span>
+
+                        <strong>
+                            {{ product.gpu }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+
+
+                    {% if product.ram %}
+
+                    <div class="quick-spec">
+
+                        <span>
+                            RAM
+                        </span>
+
+                        <strong>
+                            {{ product.ram }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+
+
+                    {% if product.storage %}
+
+                    <div class="quick-spec">
+
+                        <span>
+                            Storage
+                        </span>
+
+                        <strong>
+                            {{ product.storage }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+
+
+                    {% if product.display %}
+
+                    <div class="quick-spec">
+
+                        <span>
+                            Display
+                        </span>
+
+                        <strong>
+                            {{ product.display }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+
+
+                    {% if product.refresh_rate %}
+
+                    <div class="quick-spec">
+
+                        <span>
+                            Refresh Rate
+                        </span>
+
+                        <strong>
+                            {{ product.refresh_rate }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+
+
+
+                <!-- OBSERVED PRICE -->
+
+                {% if product.price %}
+
+                <div class="product-price-block">
+
+                    <span class="price-label">
+                        Observed Price
+                    </span>
+
+                    <div class="product-price">
+
+                        {% if product.currency == "USD" %}
+
+                            ${{ "{:,.2f}".format(product.price) }}
+
+                        {% elif product.currency == "EUR" %}
+
+                            €{{ "{:,.2f}".format(product.price) }}
+
+                        {% elif product.currency == "IDR" %}
+
+                            Rp{{ "{:,.0f}".format(product.price) }}
+
+                        {% elif product.currency == "HKD" %}
+
+                            HK${{ "{:,.0f}".format(product.price) }}
+
+                        {% else %}
+
+                            {{ product.currency }}
+                            {{ "{:,.2f}".format(product.price) }}
+
+                        {% endif %}
+
+                    </div>
+
+
+                    {% if product.price_source %}
+
+                    <div class="price-source">
+
+                        Observed at:
+                        {{ product.price_source }}
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if product.verified_date %}
+
+                    <div class="price-context">
+
+                        Price/listing checked:
+                        {{ product.verified_date }}.
+                        Prices may change after this date.
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+
+
+                <!-- AMAZON CONTEXT -->
+
+                {% if product.amazon_url %}
+
+                <div class="amazon-context">
+
+                    <strong>
+                        Amazon:
+                    </strong>
+
+                    Check Amazon for current availability
+                    and seller pricing.
+
+                </div>
+
+                {% endif %}
+
+
+
+                <!-- BUYING BUTTONS -->
+
+                <div class="product-actions">
+
+                    {% if product.retailer_url and product.retailer_name and product.retailer_name != "Amazon.com" %}
+
+                    <a
+                        href="{{ product.retailer_url }}"
+                        class="button-retailer"
+                        target="_blank"
+                        rel="sponsored noopener noreferrer"
+                    >
+                        Check {{ product.retailer_name }} →
+                    </a>
+
+                    {% endif %}
+
+
+                    {% if product.amazon_url %}
+
+                    <a
+                        href="{{ product.amazon_url }}"
+                        class="button-primary"
+                        target="_blank"
+                        rel="nofollow sponsored noopener noreferrer"
+                    >
+                        Check Amazon Availability →
+                    </a>
+
+                    <span class="paid-link">
+                        (paid link)
+                    </span>
+
+                    {% endif %}
+
+
+                    {% if product.manufacturer_url %}
+
+                    <a
+                        href="{{ product.manufacturer_url }}"
+                        class="button-secondary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Manufacturer Specifications
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+                {% if product.retailer_name %}
+                <div class="retailer-context">
+                    Current listing source:
+                    <strong>{{ product.retailer_name }}</strong>
+                </div>
+                {% endif %}
+
+
+
+                {% if product.amazon_url %}
+
+                <p class="affiliate-note">
+
+                    As an Amazon Associate I earn from qualifying purchases.
+
+                </p>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     FULL SPECIFICATIONS
+========================================================= -->
+
+<section class="product-specifications">
+
+    <div class="container">
+
+
+        <div class="section-heading">
+
+            <span class="eyebrow">
+                Technical Details
+            </span>
+
+            <h2>
+                Full Specifications
+            </h2>
+
+        </div>
+
+
+        <div class="specification-grid">
+
+
+            {% if product.exact_sku %}
+
+            <div class="specification-item">
+
+                <span>
+                    Exact SKU
+                </span>
+
+                <strong>
+                    {{ product.exact_sku }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.cpu %}
+
+            <div class="specification-item">
+
+                <span>
+                    Processor
+                </span>
+
+                <strong>
+                    {{ product.cpu }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.gpu %}
+
+            <div class="specification-item">
+
+                <span>
+                    Graphics
+                </span>
+
+                <strong>
+                    {{ product.gpu }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.vram %}
+
+            <div class="specification-item">
+
+                <span>
+                    VRAM
+                </span>
+
+                <strong>
+                    {{ product.vram }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.ram %}
+
+            <div class="specification-item">
+
+                <span>
+                    Memory
+                </span>
+
+                <strong>
+                    {{ product.ram }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.storage %}
+
+            <div class="specification-item">
+
+                <span>
+                    Storage
+                </span>
+
+                <strong>
+                    {{ product.storage }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.display %}
+
+            <div class="specification-item">
+
+                <span>
+                    Display
+                </span>
+
+                <strong>
+                    {{ product.display }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.refresh_rate %}
+
+            <div class="specification-item">
+
+                <span>
+                    Refresh Rate
+                </span>
+
+                <strong>
+                    {{ product.refresh_rate }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.tgp %}
+
+            <div class="specification-item">
+
+                <span>
+                    GPU Power
+                </span>
+
+                <strong>
+                    {{ product.tgp }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.cpu_gpu_power %}
+
+            <div class="specification-item">
+
+                <span>
+                    Combined CPU/GPU Power
+                </span>
+
+                <strong>
+                    {{ product.cpu_gpu_power }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.operating_system %}
+
+            <div class="specification-item">
+
+                <span>
+                    Operating System
+                </span>
+
+                <strong>
+                    {{ product.operating_system }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+
+            {% if product.weight %}
+
+            <div class="specification-item">
+
+                <span>
+                    Weight
+                </span>
+
+                <strong>
+                    {{ product.weight }}
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     WHERE TO BUY
+========================================================= -->
+
+<section class="product-availability">
+
+    <div class="container">
+
+        <div class="availability-box">
+
+
+            <div>
+
+                <span class="eyebrow">
+                    Where to Buy
+                </span>
+
+                <h2>
+                    Check Current Availability
+                </h2>
+
+                <p>
+
+                    Prices and availability can change.
+                    Check the retailer directly for the
+                    latest listing information.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="availability-actions">
+
+
+                {% if product.amazon_url %}
+
+                <a
+                    href="{{ product.amazon_url }}"
+                    class="button-primary"
+                    target="_blank"
+                    rel="nofollow sponsored noopener"
+                >
+                    Amazon →
+                </a>
+
+                {% endif %}
+
+
+
+                {% if product.retailer_url
+                      and product.retailer_name
+                      and product.retailer_name != "Amazon.com" %}
+
+                <a
+                    href="{{ product.retailer_url }}"
+                    class="button-secondary"
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                >
+                    {{ product.retailer_name }} →
+                </a>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     VERIFICATION
+========================================================= -->
+
+<section class="product-verification">
+
+    <div class="container">
+
+        <div class="verification-box">
+
+            <p>
+
+                {% if product.specs_verified_date %}
+
+                    Specifications verified:
+                    {{ product.specs_verified_date }}.
+
+                {% endif %}
+
+
+                {% if product.verified_date %}
+
+                    Price/listing checked:
+                    {{ product.verified_date }}.
+
+                {% endif %}
+
+
+                Product information can change as manufacturers
+                and retailers update configurations and listings.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="footer">
+
+    <div class="container footer-inner">
+
+
+        <div class="footer-tagline">
+
+            Gaming Hardware.
+            Compared.
+            Explained.
+
+        </div>
+
+
+        <div class="footer-associate-note">
+
+            As an Amazon Associate I earn from qualifying purchases.
+
+        </div>
+
+
+        <div class="copyright">
+
+            © 2026 GamersLookingFor
+
+        </div>
+
+
+    </div>
+
+</footer>
+
+
+</body>
+</html>

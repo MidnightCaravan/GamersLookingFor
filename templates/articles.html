@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gaming Hardware Articles — GamersLookingFor</title>
+
+    <meta
+        name="description"
+        content="Gaming hardware guides, product analysis, comparisons and buying information from GamersLookingFor."
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="container header-inner">
+
+        <a href="/" class="brand">
+            <span class="brand-icon">G</span>
+            <span>
+                Gamers<span class="brand-accent">LookingFor</span>
+            </span>
+        </a>
+
+        <nav class="main-nav">
+
+            <a href="/gaming-laptops">
+                Gaming Laptops
+            </a>
+
+            <a href="/gaming-pcs">
+                Gaming PCs
+            </a>
+
+            <a href="/graphics-cards">
+                GPUs
+            </a>
+
+            <a href="/monitors">
+                Monitors
+            </a>
+
+            <a href="/articles" class="active">
+                Articles
+            </a>
+
+        </nav>
+
+        <div class="header-actions">
+
+            <div class="search-box">
+                <input
+                    type="text"
+                    placeholder="Search hardware..."
+                    aria-label="Search hardware"
+                >
+            </div>
+
+            <button class="menu-button" aria-label="Open menu">
+                ☰
+            </button>
+
+        </div>
+
+    </div>
+</header>
+
+
+<main>
+
+    <section class="category-hero">
+
+        <div class="container">
+
+            <div class="category-hero-content">
+
+                <span class="eyebrow">
+                    GAMING HARDWARE
+                </span>
+
+                <h1>
+                    Articles & Guides
+                </h1>
+
+                <p>
+                    Useful information about gaming hardware,
+                    products, specifications, comparisons and buying decisions.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="container">
+
+        <div class="section-heading">
+
+            <span class="eyebrow">
+                LATEST
+            </span>
+
+            <h2>
+                Gaming Hardware Articles
+            </h2>
+
+        </div>
+
+
+        <div class="article-grid">
+
+            {% for article in articles %}
+
+            <article class="article-card">
+
+                <div class="article-card-content">
+
+                    <span class="article-category">
+                        {{ article.category }}
+                    </span>
+
+                    <h3>
+                        <a href="/articles/{{ article.slug }}">
+                            {{ article.title }}
+                        </a>
+                    </h3>
+
+                    <p>
+                        {{ article.excerpt }}
+                    </p>
+
+                    <div class="article-meta">
+                        Updated {{ article.updated_date }}
+                    </div>
+
+                    <a
+                        href="/articles/{{ article.slug }}"
+                        class="product-button"
+                    >
+                        Read Article →
+                    </a>
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-tagline">
+            Gaming Hardware. Compared. Explained.
+        </div>
+
+        <div class="copyright">
+            © 2026 GamersLookingFor
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

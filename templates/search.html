@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% if query %}
+            Search: {{ query }} | GamersLookingFor
+        {% else %}
+            Search | GamersLookingFor
+        {% endif %}
+    </title>
+
+    <meta
+        name="description"
+        content="Search gaming laptops, gaming PCs, graphics cards, monitors and gaming hardware on GamersLookingFor."
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .search-page {
+            min-height: 80vh;
+            padding: 70px 0 100px;
+        }
+
+        .search-container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .search-header {
+            max-width: 800px;
+            margin-bottom: 50px;
+        }
+
+        .search-header h1 {
+            margin: 0 0 18px;
+            color: #f4f7ff;
+            font-size: clamp(42px, 6vw, 70px);
+            line-height: 1;
+            letter-spacing: -0.04em;
+        }
+
+        .search-header p {
+            margin: 0;
+            color: #a8b6cb;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+            max-width: 800px;
+            margin-bottom: 60px;
+        }
+
+        .search-form input {
+            flex: 1;
+            min-width: 0;
+            height: 54px;
+            padding: 0 18px;
+            border: 1px solid rgba(8, 170, 255, 0.25);
+            border-radius: 12px;
+            outline: none;
+            background: #071321;
+            color: #f4f7ff;
+            font-size: 16px;
+        }
+
+        .search-form input:focus {
+            border-color: #08aaff;
+            box-shadow: 0 0 0 3px rgba(8, 170, 255, 0.10);
+        }
+
+        .search-form button {
+            min-width: 130px;
+            height: 54px;
+            padding: 0 22px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(
+                135deg,
+                #08aaff,
+                #714cff
+            );
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .results-section {
+            margin-bottom: 60px;
+        }
+
+        .results-heading {
+            margin-bottom: 24px;
+        }
+
+        .results-heading h2 {
+            margin: 0 0 6px;
+            color: #f4f7ff;
+            font-size: 28px;
+        }
+
+        .results-heading p {
+            margin: 0;
+            color: #718198;
+            font-size: 14px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .result-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 220px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            background: #071321;
+            text-decoration: none;
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(8, 170, 255, 0.35);
+        }
+
+        .result-category {
+            margin-bottom: 10px;
+            color: #08aaff;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .result-card h3 {
+            margin: 0 0 12px;
+            color: #f4f7ff;
+            font-size: 21px;
+            line-height: 1.25;
+        }
+
+        .result-card p {
+            margin: 0;
+            color: #9aaac0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .result-arrow {
+            margin-top: auto;
+            padding-top: 20px;
+            color: #08aaff;
+            font-size: 20px;
+        }
+
+        .no-results {
+            padding: 50px 30px;
+            border: 1px dashed rgba(8, 170, 255, 0.22);
+            border-radius: 18px;
+            background: rgba(8, 170, 255, 0.03);
+            text-align: center;
+        }
+
+        .no-results h2 {
+            margin: 0 0 12px;
+            color: #f4f7ff;
+        }
+
+        .no-results p {
+            margin: 0;
+            color: #8b9bb1;
+        }
+
+        @media (max-width: 900px) {
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .search-page {
+                padding-top: 45px;
+            }
+
+            .search-container {
+                padding: 0 18px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-form button {
+                width: 100%;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <div class="container header-inner">
+
+        <a href="/" class="brand">
+            <span class="brand-icon">G</span>
+
+            <span>
+                Gamers<span class="brand-accent">LookingFor</span>
+            </span>
+        </a>
+
+
+        <nav class="main-nav">
+
+            <a href="/gaming-laptops">
+                Gaming Laptops
+            </a>
+
+            <a href="/gaming-pcs">
+                Gaming PCs
+            </a>
+
+            <a href="/graphics-cards">
+                GPUs
+            </a>
+
+            <a href="/monitors">
+                Monitors
+            </a>
+
+            <a href="/articles">
+                Articles
+            </a>
+
+        </nav>
+
+
+        <div class="header-actions">
+
+            <form
+                class="search-box"
+                action="/search"
+                method="get"
+            >
+
+                <span>⌕</span>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="Search hardware..."
+                    aria-label="Search hardware"
+                >
+
+            </form>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="search-page">
+
+    <div class="search-container">
+
+        <header class="search-header">
+
+            <span class="eyebrow">
+                GAMERSLOOKINGFOR SEARCH
+            </span>
+
+            {% if query %}
+
+                <h1>
+                    Search Results
+                </h1>
+
+                <p>
+                    Results for
+                    <strong>"{{ query }}"</strong>
+                </p>
+
+            {% else %}
+
+                <h1>
+                    Search Gaming Hardware
+                </h1>
+
+                <p>
+                    Search products, specifications, SKUs,
+                    brands and gaming hardware articles.
+                </p>
+
+            {% endif %}
+
+        </header>
+
+
+        <form
+            class="search-form"
+            action="/search"
+            method="get"
+        >
+
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Try RTX 5070 Ti, MSI, Vector, laptop..."
+                autocomplete="off"
+                autofocus
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+
+        {% if query %}
+
+            {% if products %}
+
+            <section class="results-section">
+
+                <div class="results-heading">
+
+                    <h2>
+                        Products
+                    </h2>
+
+                    <p>
+                        {{ products|length }}
+                        product result{% if products|length != 1 %}s{% endif %}
+                    </p>
+
+                </div>
+
+
+                <div class="results-grid">
+
+                    {% for product in products %}
+
+                    <a
+                        href="{{ url_for(
+                            'product',
+                            product_id=product.id
+                        ) }}"
+                        class="result-card"
+                    >
+
+                        <div class="result-category">
+                            {{ product.category }}
+                        </div>
+
+                        <h3>
+                            {{ product.brand }}
+                            {{ product.name }}
+                        </h3>
+
+                        <p>
+                            {{ product.description }}
+                        </p>
+
+                        <div class="result-arrow">
+                            View Product →
+                        </div>
+
+                    </a>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            {% endif %}
+
+
+            {% if articles %}
+
+            <section class="results-section">
+
+                <div class="results-heading">
+
+                    <h2>
+                        Articles & Guides
+                    </h2>
+
+                    <p>
+                        {{ articles|length }}
+                        article result{% if articles|length != 1 %}s{% endif %}
+                    </p>
+
+                </div>
+
+
+                <div class="results-grid">
+
+                    {% for article in articles %}
+
+                    <a
+                        href="{{ url_for(
+                            'article',
+                            slug=article.slug
+                        ) }}"
+                        class="result-card"
+                    >
+
+                        <div class="result-category">
+                            {{ article.category }}
+                        </div>
+
+                        <h3>
+                            {{ article.title }}
+                        </h3>
+
+                        <p>
+                            {{ article.excerpt }}
+                        </p>
+
+                        <div class="result-arrow">
+                            Read Article →
+                        </div>
+
+                    </a>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+            {% endif %}
+
+
+            {% if not products and not articles %}
+
+            <div class="no-results">
+
+                <h2>
+                    Nothing found
+                </h2>
+
+                <p>
+                    Try searching for a brand, GPU,
+                    CPU, laptop model or product SKU.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container footer-inner">
+
+        <div>
+
+            <div class="brand">
+                <span class="brand-icon">G</span>
+
+                <span>
+                    Gamers<span class="brand-accent">LookingFor</span>
+                </span>
+            </div>
+
+            <p class="footer-tagline">
+                Gaming Hardware. Compared. Explained.
+            </p>
+
+        </div>
+
+
+        <div class="copyright">
+            © 2026 GamersLookingFor
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>
